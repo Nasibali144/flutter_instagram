@@ -34,6 +34,16 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+
+	<key>NSPhotoLibraryUsageDescription</key>
+    <string>Allow me to use the photo gallery to upload a photo to the post</string>
+
+    <key>NSCameraUsageDescription</key>
+    <string>You must allow the camera to be used to upload pictures to the post!</string>
+
+    <key>NSMicrophoneUsageDescription</key>
+    <string>Allow access to microphone</string>
+
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
