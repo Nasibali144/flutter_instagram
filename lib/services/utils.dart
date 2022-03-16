@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class Utils {
   // FireSnackBar
@@ -15,5 +16,11 @@ class Utils {
         shape: const StadiumBorder(),
       ),
     );
+  }
+
+  static String getMonthDayYear(String date) {
+    final DateTime now = DateTime.parse(date);
+    final String formatted = DateFormat.yMMMMd().format(now);
+    return formatted;
   }
 }

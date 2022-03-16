@@ -25,8 +25,8 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       body: PageView(
         controller: pageController,
-        children: const [
-          FeedPage(),
+        children: [
+          FeedPage(pageController: pageController,),
           SearchPage(),
           UploadPage(),
           LikesPage(),
