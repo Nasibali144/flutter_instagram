@@ -1,7 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_instagram/pages/home_page.dart';
 import 'package:flutter_instagram/pages/signup_page.dart';
+import 'package:flutter_instagram/services/auth_service.dart';
+import 'package:flutter_instagram/services/pref_service.dart';
 import 'package:flutter_instagram/services/theme_service.dart';
 import 'package:flutter_instagram/services/utils.dart';
 import 'package:flutter_instagram/views/button_widget.dart';
@@ -19,7 +22,9 @@ class _SignInPageState extends State<SignInPage> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
-  void _openHomePage() {
+  bool isLoading = false;
+
+  void _openHomePage() async {
     String email = emailController.text.trim().toString();
     String password = passwordController.text.trim().toString();
 
@@ -28,9 +33,26 @@ class _SignInPageState extends State<SignInPage> {
       return;
     }
 
-    // server connect
-    // response success
-    Navigator.pushReplacementNamed(context, HomePage.id);
+    setState(() {
+      isLoading = true;
+    });
+
+    await AuthService.signInUser(email, password).then((response) {
+      _getFirebaseUser(response);
+    });
+  }
+
+  void _getFirebaseUser(User? user) async {
+    setState(() {
+      isLoading = false;
+    });
+
+    if(user != null) {
+      Prefs.store(StorageKeys.UID, user.uid);
+      Navigator.pushReplacementNamed(context, HomePage.id);
+    } else {
+      Utils.fireSnackBar("Check Your Information", context);
+    }
   }
 
   @override

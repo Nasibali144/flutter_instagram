@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_instagram/models/post_model.dart';
+import 'package:flutter_instagram/services/auth_service.dart';
 import 'package:flutter_instagram/views/appbar_widget.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -27,7 +28,9 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: appBar(title: "Profile"),
+      appBar: appBar(title: "Profile", icon: Icon(Icons.exit_to_app, color: Colors.black87,), onPressed: () {
+        AuthService.signOutUser(context);
+      }),
       body: Container(
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
@@ -129,7 +132,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 Expanded(
                   child: RichText(
                     textAlign: TextAlign.center,
-                    text: TextSpan(
+                    text: const TextSpan(
                       style: TextStyle(fontSize: 16, color: Colors.black, fontWeight: FontWeight.bold),
                       text: "897" + "\n",
                       children: [

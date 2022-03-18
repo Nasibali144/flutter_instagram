@@ -1,7 +1,10 @@
 import 'dart:async';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_instagram/pages/home_page.dart';
 import 'package:flutter_instagram/pages/signin_page.dart';
+import 'package:flutter_instagram/services/pref_service.dart';
 import 'package:flutter_instagram/services/theme_service.dart';
 
 class SplashPage extends StatefulWidget {
@@ -14,7 +17,22 @@ class SplashPage extends StatefulWidget {
 
 class _SplashPageState extends State<SplashPage> {
 
-  void _openSignInPage() => Timer(const Duration(seconds: 3), () => Navigator.pushReplacementNamed(context, SignInPage.id));
+  Widget _starterPage() {
+    return StreamBuilder<User?>(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (context, snapshot) {
+        if(snapshot.hasData) {
+          Prefs.store(StorageKeys.UID, snapshot.data!.uid);
+          return HomePage();
+        } else {
+          Prefs.remove(StorageKeys.UID);
+          return SignInPage();
+        }
+      },
+    );
+  }
+
+  void _openSignInPage() => Timer(const Duration(seconds: 2), () => Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => _starterPage())));
 
   @override
   void initState() {
