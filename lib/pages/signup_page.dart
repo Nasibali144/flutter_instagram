@@ -1,8 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_instagram/models/user_model.dart' as model;
 import 'package:flutter_instagram/pages/signin_page.dart';
 import 'package:flutter_instagram/services/auth_service.dart';
+import 'package:flutter_instagram/services/data_service.dart';
 import 'package:flutter_instagram/services/pref_service.dart';
 import 'package:flutter_instagram/services/theme_service.dart';
 import 'package:flutter_instagram/services/utils.dart';
@@ -39,23 +41,31 @@ class _SignUpPageState extends State<SignUpPage> {
     setState(() {
       isLoading = true;
     });
-
-    await AuthService.signUpUser(fullName, email, password).then((response) {
-      _getFirebaseUser(response);
+    var modelUser = model.User(password: password, email: email, fullName:  fullName);
+    await AuthService.signUpUser(modelUser).then((response) {
+      _getFirebaseUser(modelUser, response);
     });
   }
 
-  void _getFirebaseUser(User? user) async {
+  void _getFirebaseUser(model.User modelUser, Map<String, User?> map) async {
     setState(() {
       isLoading = false;
     });
 
-    if(user != null) {
-      Prefs.store(StorageKeys.UID, user.uid);
-      Navigator.pushReplacementNamed(context, SignInPage.id);
-    } else {
-      Utils.fireSnackBar("Check Your Information", context);
+    if(!map.containsKey("SUCCESS")) {
+      if(map.containsKey("weak-password")) Utils.fireSnackBar("The password provided is too weak.", context);
+      if(map.containsKey("email-already-in-use")) Utils.fireSnackBar("The account already exists for that email.", context);
+      if(map.containsKey("ERROR")) Utils.fireSnackBar("Check Your Information.", context);
+      return;
     }
+
+    User? user = map["SUCCESS"];
+    if(user == null) return;
+
+    await Prefs.store(StorageKeys.UID, user.uid);
+    modelUser.uid = user.uid;
+
+    DataService.storeUser(modelUser).then((value) => {Navigator.pushReplacementNamed(context, SignInPage.id)});
   }
 
   @override

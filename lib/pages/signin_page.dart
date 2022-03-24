@@ -42,17 +42,23 @@ class _SignInPageState extends State<SignInPage> {
     });
   }
 
-  void _getFirebaseUser(User? user) async {
+  void _getFirebaseUser(Map<String, User?> map) async {
     setState(() {
       isLoading = false;
     });
 
-    if(user != null) {
-      Prefs.store(StorageKeys.UID, user.uid);
-      Navigator.pushReplacementNamed(context, HomePage.id);
-    } else {
-      Utils.fireSnackBar("Check Your Information", context);
+    if(!map.containsKey("SUCCESS")) {
+      if(map.containsKey("user-not-found")) Utils.fireSnackBar("No user found for that email.", context);
+      if(map.containsKey("wrong-password")) Utils.fireSnackBar("Wrong password provided for that user.", context);
+      if(map.containsKey("ERROR")) Utils.fireSnackBar("Check Your Information.", context);
+      return;
     }
+
+    User? user = map["SUCCESS"];
+    if(user == null) return;
+
+    await Prefs.store(StorageKeys.UID, user.uid);
+    Navigator.pushReplacementNamed(context, HomePage.id);
   }
 
   @override
