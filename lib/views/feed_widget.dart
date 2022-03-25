@@ -42,6 +42,7 @@ class _FeedWidgetState extends State<FeedWidget> {
           ),
           CachedNetworkImage(
             width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.width,
             fit: BoxFit.cover,
             imageUrl: widget.post.postImage,
             placeholder: (context, url) => Container(color: Colors.grey,),

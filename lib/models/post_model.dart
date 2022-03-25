@@ -1,24 +1,17 @@
 class Post {
-  late String uid;
-  late String fullName;
-  late String id;
+  String uid = "";
+  String fullName = "";
+  String id = "";
   late String postImage;
   late String caption;
-  late String createdDate;
-  late bool isLiked;
-  late bool isMine;
+  String createdDate = "";
+  bool isLiked = false;
+  bool isMine = false;
   String? imageUser;
 
   Post({
-    required this.uid,
-    required this.id,
     required this.postImage,
     required this.caption,
-    required this.createdDate,
-    required this.isLiked,
-    required this.isMine,
-    required this.fullName,
-    this.imageUser,
   });
 
   Post.fromJson(Map<String, dynamic> json) {

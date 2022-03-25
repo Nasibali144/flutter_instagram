@@ -18,8 +18,8 @@ class _LikesPageState extends State<LikesPage> {
   void initState() {
     super.initState();
     items.addAll([
-      Post(uid: "uid", id: "id", postImage: "https://firebasestorage.googleapis.com/v0/b/koreanguideway.appspot.com/o/develop%2Fpost.png?alt=media&token=f0b1ba56-4bf4-4df2-9f43-6b8665cdc964", caption: "Discover more great images on our sponsor's site", createdDate: DateTime.now().toString(), isLiked: true, isMine: true, fullName: "User"),
-      Post(uid: "uid", id: "id", postImage: "https://firebasestorage.googleapis.com/v0/b/koreanguideway.appspot.com/o/develop%2Fpost2.png?alt=media&token=ac0c131a-4e9e-40c0-a75a-88e586b28b72", caption: "Discover more great images on our sponsor's site", createdDate: DateTime.now().toString(), isLiked: true, isMine: true, fullName: "User")
+      Post(postImage: "https://firebasestorage.googleapis.com/v0/b/koreanguideway.appspot.com/o/develop%2Fpost.png?alt=media&token=f0b1ba56-4bf4-4df2-9f43-6b8665cdc964", caption: "Discover more great images on our sponsor's site",),
+      Post(postImage: "https://firebasestorage.googleapis.com/v0/b/koreanguideway.appspot.com/o/develop%2Fpost2.png?alt=media&token=ac0c131a-4e9e-40c0-a75a-88e586b28b72", caption: "Discover more great images on our sponsor's site",)
     ]);
   }
 

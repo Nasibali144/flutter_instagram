@@ -23,15 +23,13 @@ class _ProfilePageState extends State<ProfilePage> {
   List<Post> items = [];
   File? _image;
   User? user;
+  int countPosts = 0;
 
   @override
   void initState() {
     super.initState();
     _apiLoadUser();
-    items.addAll([
-      Post(uid: "uid", id: "id", postImage: "https://firebasestorage.googleapis.com/v0/b/koreanguideway.appspot.com/o/develop%2Fpost.png?alt=media&token=f0b1ba56-4bf4-4df2-9f43-6b8665cdc964", caption: "Discover more great images on our sponsor's site", createdDate: DateTime.now().toString(), isLiked: false, isMine: true, fullName: "User"),
-      Post(uid: "uid", id: "id", postImage: "https://firebasestorage.googleapis.com/v0/b/koreanguideway.appspot.com/o/develop%2Fpost2.png?alt=media&token=ac0c131a-4e9e-40c0-a75a-88e586b28b72", caption: "Discover more great images on our sponsor's site", createdDate: DateTime.now().toString(), isLiked: false, isMine: true, fullName: "User")
-    ]);
+    _apiLoadPost();
   }
 
   // for user image
@@ -119,6 +117,20 @@ class _ProfilePageState extends State<ProfilePage> {
     await DataService.updateUser(user!);
   }
 
+  // for load post
+  void _apiLoadPost() {
+    DataService.loadPosts().then((posts) => {
+      _resLoadPost(posts)
+    });
+  }
+
+  void _resLoadPost(List<Post> posts) {
+    setState(() {
+      items = posts;
+      countPosts = posts.length;
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -202,7 +214,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         textAlign: TextAlign.center,
                         text: TextSpan(
                             style: TextStyle(fontSize: 16, color: Colors.black, fontWeight: FontWeight.bold),
-                            text: "675" + "\n",
+                            text: countPosts.toString() + "\n",
                             children: [
                               TextSpan(
                                 style: TextStyle(color: Colors.grey, fontWeight: FontWeight.w500, fontSize: 14),
