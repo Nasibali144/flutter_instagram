@@ -2,18 +2,52 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_instagram/models/post_model.dart';
+import 'package:flutter_instagram/services/data_service.dart';
 import 'package:flutter_instagram/services/utils.dart';
 
 class FeedWidget extends StatefulWidget {
   final Post post;
 
-  const FeedWidget({required this.post,Key? key}) : super(key: key);
+  const FeedWidget({required this.post, Key? key}) : super(key: key);
 
   @override
   _FeedWidgetState createState() => _FeedWidgetState();
 }
 
 class _FeedWidgetState extends State<FeedWidget> {
+  bool isLoading = false;
+
+  void _apiPostLike(Post post) async {
+
+    setState(() {
+      isLoading = true;
+    });
+    await DataService.likePost(post, true);
+    setState(() {
+      isLoading = false;
+      post.isLiked = true;
+    });
+  }
+
+  void _apiUnPostLike(Post post) async {
+    setState(() {
+      isLoading = true;
+    });
+    await DataService.likePost(post, false);
+    setState(() {
+      isLoading = false;
+      post.isLiked = false;
+    });
+  }
+
+  void updateLike() {
+    if(widget.post.isLiked) {
+      _apiUnPostLike(widget.post);
+    } else {
+      _apiPostLike(widget.post);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -22,7 +56,7 @@ class _FeedWidgetState extends State<FeedWidget> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Divider(),
+          const Divider(),
           ListTile(
             leading: ClipRRect(
               borderRadius: BorderRadius.circular(25),
@@ -51,11 +85,7 @@ class _FeedWidgetState extends State<FeedWidget> {
           Row(
             children: [
               IconButton(
-                onPressed: () {
-                  setState(() {
-                    widget.post.isLiked = !widget.post.isLiked;
-                  });
-                },
+                onPressed: updateLike,
                 icon: Icon(widget.post.isLiked ? Icons.favorite: Icons.favorite_outline, color: widget.post.isLiked? Colors.red: Colors.black, size: 27.5,),
               ),
               IconButton(
