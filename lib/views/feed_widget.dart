@@ -7,8 +7,9 @@ import 'package:flutter_instagram/services/utils.dart';
 
 class FeedWidget extends StatefulWidget {
   final Post post;
+  final Function? function;
 
-  const FeedWidget({required this.post, Key? key}) : super(key: key);
+  const FeedWidget({required this.post, this.function, Key? key}) : super(key: key);
 
   @override
   _FeedWidgetState createState() => _FeedWidgetState();
@@ -23,10 +24,12 @@ class _FeedWidgetState extends State<FeedWidget> {
       isLoading = true;
     });
     await DataService.likePost(post, true);
-    setState(() {
-      isLoading = false;
-      post.isLiked = true;
-    });
+    if(mounted) {
+      setState(() {
+        isLoading = false;
+        post.isLiked = true;
+      });
+    }
   }
 
   void _apiUnPostLike(Post post) async {
@@ -38,6 +41,10 @@ class _FeedWidgetState extends State<FeedWidget> {
       isLoading = false;
       post.isLiked = false;
     });
+
+    if(widget.function != null) {
+      widget.function!();
+    }
   }
 
   void updateLike() {

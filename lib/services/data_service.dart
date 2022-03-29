@@ -45,15 +45,26 @@ class DataService {
     List<User> users = [];
     // write request
     var querySnapshot = await instance.collection(folderUsers).orderBy("fullName").startAt([keyword]).endAt([keyword + '\uf8ff']).get();
-    if (kDebugMode) {
-      print(querySnapshot.docs.toString());
-    }
 
     for (var element in querySnapshot.docs) {
       users.add(User.fromJson(element.data()));
     }
-
     users.remove(user);
+
+    List<User> following = [];
+    var querySnapshot2 = await instance.collection(folderUsers).doc(user.uid).collection(folderFollowing).get();
+
+    for (var result in querySnapshot2.docs) {
+      following.add(User.fromJson(result.data()));
+    }
+
+    for(User user in users){
+      if(following.contains(user)){
+        user.followed = true;
+      }else{
+        user.followed = false;
+      }
+    }
     return users;
   }
 
@@ -73,7 +84,8 @@ class DataService {
   }
 
   static Future<Post> storeFeed(Post post) async {
-    await instance.collection(folderUsers).doc(post.uid).collection(folderFeeds).doc(post.id).set(post.toJson());
+    String uid = (await Prefs.load(StorageKeys.UID))!;
+    await instance.collection(folderUsers).doc(uid).collection(folderFeeds).doc(post.id).set(post.toJson());
     return post;
   }
 

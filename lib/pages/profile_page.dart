@@ -93,10 +93,12 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void _showUserInfo(User user) {
-    setState(() {
-      this.user = user;
-      isLoading = false;
-    });
+    if(mounted)  {
+      setState(() {
+        this.user = user;
+        isLoading = false;
+      });
+    }
   }
 
   // for edit user

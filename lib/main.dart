@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
         ),
         backgroundColor: Colors.white,
       ),
-      home: SplashPage(),
+      home: const SplashPage(),
       routes: {
         SplashPage.id: (context) => const SplashPage(),
         SignInPage.id: (context) => const SignInPage(),
