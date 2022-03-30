@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_instagram/pages/home_page.dart';
 import 'package:flutter_instagram/pages/signin_page.dart';
@@ -16,6 +18,7 @@ class SplashPage extends StatefulWidget {
 }
 
 class _SplashPageState extends State<SplashPage> {
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
   Widget _starterPage() {
     return StreamBuilder<User?>(
@@ -34,10 +37,30 @@ class _SplashPageState extends State<SplashPage> {
 
   void _openSignInPage() => Timer(const Duration(seconds: 2), () => Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => _starterPage())));
 
+  _initNotification() async {
+    await _firebaseMessaging.requestPermission(
+      alert: true,
+      announcement: false,
+      badge: true,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
+      sound: true,
+    );
+
+    await _firebaseMessaging.getToken().then((token) {
+      if (kDebugMode) {
+        print(token);
+      }
+      Prefs.store(StorageKeys.TOKEN, token!);
+    });
+  }
+
   @override
   void initState() {
     super.initState();
     _openSignInPage();
+    _initNotification();
   }
   @override
   Widget build(BuildContext context) {
