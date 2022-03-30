@@ -8,8 +8,9 @@ import 'package:flutter_instagram/services/utils.dart';
 class FeedWidget extends StatefulWidget {
   final Post post;
   final Function? function;
+  final Function? load;
 
-  const FeedWidget({required this.post, this.function, Key? key}) : super(key: key);
+  const FeedWidget({required this.post, this.function, this.load, Key? key}) : super(key: key);
 
   @override
   _FeedWidgetState createState() => _FeedWidgetState();
@@ -55,6 +56,26 @@ class _FeedWidgetState extends State<FeedWidget> {
     }
   }
 
+  void deletePost(Post post) async {
+    bool result = await Utils.dialogCommon(context, "Instagram Clone", "Do yu want to remove this post?", false);
+
+    if(result) {
+      setState(() {
+        isLoading = true;
+      });
+
+      await DataService.removePost(post);
+
+      setState(() {
+        isLoading = false;
+      });
+
+      if(widget.load != null) {
+        widget.load!();
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -76,18 +97,27 @@ class _FeedWidgetState extends State<FeedWidget> {
             ),
             title: Text(widget.post.fullName, style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),),
             subtitle: Text(Utils.getMonthDayYear(widget.post.createdDate), style: TextStyle(color: Colors.black)),
-            trailing: IconButton(
-              onPressed: () {},
-              icon: Icon(Icons.more_horiz, color: Colors.black, size: 30,),
-            ),
+            trailing: widget.post.isMine ? IconButton(
+              onPressed: () => deletePost(widget.post),
+              icon: const Icon(Icons.more_horiz, color: Colors.black, size: 30,),
+            ) : const SizedBox.shrink(),
           ),
-          CachedNetworkImage(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.width,
-            fit: BoxFit.cover,
-            imageUrl: widget.post.postImage,
-            placeholder: (context, url) => Container(color: Colors.grey,),
-            errorWidget: (context, url, error) => Icon(Icons.error),
+          Stack(
+            alignment: Alignment.center,
+            children: [
+              CachedNetworkImage(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.width,
+                fit: BoxFit.cover,
+                imageUrl: widget.post.postImage,
+                placeholder: (context, url) => Container(color: Colors.grey,),
+                errorWidget: (context, url, error) => Icon(Icons.error),
+              ),
+
+              if(isLoading) const Center(
+                child: CircularProgressIndicator(),
+              ),
+            ],
           ),
           Row(
             children: [

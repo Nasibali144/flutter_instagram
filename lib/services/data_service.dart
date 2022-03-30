@@ -200,12 +200,12 @@ class DataService {
 
   static Future removeFeed(Post post) async {
     String uid = (await Prefs.load(StorageKeys.UID))!;
-
     return await instance.collection(folderUsers).doc(uid).collection(folderFeeds).doc(post.id).delete();
   }
 
   static Future removePost(Post post) async {
+    String uid = (await Prefs.load(StorageKeys.UID))!;
     await removeFeed(post);
-    return await instance.collection(folderUsers).doc(post.uid).collection(folderPosts).doc(post.id).delete();
+    return await instance.collection(folderUsers).doc(uid).collection(folderPosts).doc(post.id).delete();
   }
 }

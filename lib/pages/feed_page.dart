@@ -55,7 +55,7 @@ class _FeedPageState extends State<FeedPage> {
         children: [
           ListView.builder(
             itemCount: items.length,
-            itemBuilder: (context, index) => FeedWidget(post: items[index]),
+            itemBuilder: (context, index) => FeedWidget(post: items[index], load: _apiLoadFeeds,),
           ),
 
           if(isLoading) const Center(

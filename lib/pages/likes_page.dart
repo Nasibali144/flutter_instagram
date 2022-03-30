@@ -48,7 +48,7 @@ class _LikesPageState extends State<LikesPage> {
           ListView.builder(
             itemCount: items.length,
             itemBuilder: (context, index) {
-              return FeedWidget(post: items[index], function: _apiLoadLikes,);
+              return FeedWidget(post: items[index], function: _apiLoadLikes, load: _apiLoadLikes,);
             }),
 
           if(isLoading) const Center(

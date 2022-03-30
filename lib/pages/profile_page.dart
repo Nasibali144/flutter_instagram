@@ -7,6 +7,7 @@ import 'package:flutter_instagram/models/user_model.dart';
 import 'package:flutter_instagram/services/auth_service.dart';
 import 'package:flutter_instagram/services/data_service.dart';
 import 'package:flutter_instagram/services/file_service.dart';
+import 'package:flutter_instagram/services/utils.dart';
 import 'package:flutter_instagram/views/appbar_widget.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -34,9 +35,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
   // for user image
   _imgFromCamera() async {
-    XFile? image = await ImagePicker().pickImage(
-        source: ImageSource.camera, imageQuality: 50
-    );
+    XFile? image = await ImagePicker()
+        .pickImage(source: ImageSource.camera, imageQuality: 50);
 
     setState(() {
       _image = File(image!.path);
@@ -45,9 +45,8 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   _imgFromGallery() async {
-    XFile? image = await  ImagePicker().pickImage(
-        source: ImageSource.gallery, imageQuality: 50
-    );
+    XFile? image = await ImagePicker()
+        .pickImage(source: ImageSource.gallery, imageQuality: 50);
 
     setState(() {
       _image = File(image!.path);
@@ -80,8 +79,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ],
             ),
           );
-        }
-    );
+        });
   }
 
   // for load user
@@ -93,7 +91,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void _showUserInfo(User user) {
-    if(mounted)  {
+    if (mounted) {
       setState(() {
         this.user = user;
         isLoading = false;
@@ -103,15 +101,16 @@ class _ProfilePageState extends State<ProfilePage> {
 
   // for edit user
   void _apiChangePhoto() {
-    if(_image == null) return;
+    if (_image == null) return;
 
     setState(() {
       isLoading = true;
     });
-    FileService.uploadImage(_image!, FileService.folderUserImg).then((value) => _apiUpdateUser(value));
+    FileService.uploadImage(_image!, FileService.folderUserImg)
+        .then((value) => _apiUpdateUser(value));
   }
 
-  void _apiUpdateUser(String imgUrl) async{
+  void _apiUpdateUser(String imgUrl) async {
     setState(() {
       isLoading = false;
       user!.imageUrl = imgUrl;
@@ -121,9 +120,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   // for load post
   void _apiLoadPost() {
-    DataService.loadPosts().then((posts) => {
-      _resLoadPost(posts)
-    });
+    DataService.loadPosts().then((posts) => {_resLoadPost(posts)});
   }
 
   void _resLoadPost(List<Post> posts) {
@@ -133,14 +130,38 @@ class _ProfilePageState extends State<ProfilePage> {
     });
   }
 
+  void _deletePost(Post post) async {
+    bool result = await Utils.dialogCommon(
+        context, "Instagram Clone", "Do yu want to remove this post?", false);
+
+    if (result) {
+      setState(() {
+        isLoading = true;
+      });
+
+      await DataService.removePost(post);
+
+      setState(() {
+        isLoading = false;
+      });
+
+      _apiLoadPost();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: appBar(title: "Profile", icon: Icon(Icons.exit_to_app, color: Colors.black87,), onPressed: () {
-        AuthService.deleteAccount(context);
-      }),
+      appBar: appBar(
+          title: "Profile",
+          icon: Icon(
+            Icons.exit_to_app,
+            color: Colors.black87,
+          ),
+          onPressed: () {
+            AuthService.signOutUser(context);
+          }),
       body: Stack(
         children: [
           Container(
@@ -158,21 +179,24 @@ class _ProfilePageState extends State<ProfilePage> {
                       width: 75,
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(50),
-                          border: Border.all(color: Colors.purpleAccent, width: 2)),
+                          border:
+                              Border.all(color: Colors.purpleAccent, width: 2)),
                       padding: EdgeInsets.all(2),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(75),
-                        child:  user?.imageUrl == null || user!.imageUrl!.isEmpty ? const Image(
-                          image: AssetImage("assets/images/user.png"),
-                          height: 50,
-                          width: 50,
-                          fit: BoxFit.cover,
-                        ) : Image(
-                          image: NetworkImage(user!.imageUrl!),
-                          height: 50,
-                          width: 50,
-                          fit: BoxFit.cover,
-                        ),
+                        child: user?.imageUrl == null || user!.imageUrl!.isEmpty
+                            ? const Image(
+                                image: AssetImage("assets/images/user.png"),
+                                height: 50,
+                                width: 50,
+                                fit: BoxFit.cover,
+                              )
+                            : Image(
+                                image: NetworkImage(user!.imageUrl!),
+                                height: 50,
+                                width: 50,
+                                fit: BoxFit.cover,
+                              ),
                       ),
                     ),
                     Container(
@@ -198,14 +222,27 @@ class _ProfilePageState extends State<ProfilePage> {
                     )
                   ],
                 ),
-                SizedBox(height: 10,),
+                SizedBox(
+                  height: 10,
+                ),
 
                 // #name
-                Text(user == null ? "": user!.fullName.toUpperCase(), style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold),),
+                Text(
+                  user == null ? "" : user!.fullName.toUpperCase(),
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold),
+                ),
 
                 // #email
-                Text(user == null ? "": user!.email, style: TextStyle(color: Colors.black54, fontSize: 14),),
-                SizedBox(height: 15,),
+                Text(
+                  user == null ? "" : user!.email,
+                  style: TextStyle(color: Colors.black54, fontSize: 14),
+                ),
+                SizedBox(
+                  height: 15,
+                ),
 
                 // #statistics
                 Row(
@@ -215,15 +252,20 @@ class _ProfilePageState extends State<ProfilePage> {
                       child: RichText(
                         textAlign: TextAlign.center,
                         text: TextSpan(
-                            style: TextStyle(fontSize: 16, color: Colors.black, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold),
                             text: countPosts.toString() + "\n",
                             children: [
                               TextSpan(
-                                style: TextStyle(color: Colors.grey, fontWeight: FontWeight.w500, fontSize: 14),
+                                style: TextStyle(
+                                    color: Colors.grey,
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 14),
                                 text: "POST",
                               )
-                            ]
-                        ),
+                            ]),
                       ),
                     ),
                     Container(
@@ -235,15 +277,22 @@ class _ProfilePageState extends State<ProfilePage> {
                       child: RichText(
                         textAlign: TextAlign.center,
                         text: TextSpan(
-                            style: TextStyle(fontSize: 16, color: Colors.black, fontWeight: FontWeight.bold),
-                            text: user == null ? "0": user!.followersCount.toString() + "\n",
+                            style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold),
+                            text: user == null
+                                ? "0"
+                                : user!.followersCount.toString() + "\n",
                             children: [
                               TextSpan(
-                                style: TextStyle(color: Colors.grey, fontWeight: FontWeight.w500, fontSize: 14),
+                                style: TextStyle(
+                                    color: Colors.grey,
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 14),
                                 text: "FOLLOWERS",
                               )
-                            ]
-                        ),
+                            ]),
                       ),
                     ),
                     Container(
@@ -255,51 +304,74 @@ class _ProfilePageState extends State<ProfilePage> {
                       child: RichText(
                         textAlign: TextAlign.center,
                         text: TextSpan(
-                            style: TextStyle(fontSize: 16, color: Colors.black, fontWeight: FontWeight.bold),
-                            text: user == null ? "0": user!.followingCount.toString() + "\n",
+                            style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold),
+                            text: user == null
+                                ? "0"
+                                : user!.followingCount.toString() + "\n",
                             children: [
                               TextSpan(
-                                style: TextStyle(color: Colors.grey, fontWeight: FontWeight.w500, fontSize: 14),
+                                style: TextStyle(
+                                    color: Colors.grey,
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 14),
                                 text: "FOLLOWING",
                               )
-                            ]
-                        ),
+                            ]),
                       ),
                     ),
                   ],
                 ),
-                SizedBox(height: 20,),
+                SizedBox(
+                  height: 20,
+                ),
 
                 // #posts
                 Expanded(
                   child: ListView.builder(
                       itemCount: items.length,
                       itemBuilder: (context, index) {
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            CachedNetworkImage(
-                              width: MediaQuery.of(context).size.width,
-                              fit: BoxFit.cover,
-                              imageUrl: items[index].postImage,
-                              placeholder: (context, url) => Container(color: Colors.grey,),
-                              errorWidget: (context, url, error) => Icon(Icons.error),
-                            ),
-                            Text(items[index].caption, textAlign: TextAlign.center,),
-                            SizedBox(height: 15,),
-                          ],
-                        );
+                        return itemOfPost(index, context);
                       }),
                 ),
               ],
             ),
           ),
-
-          if(isLoading) const Center(
-            child: CircularProgressIndicator(),
-          )
+          if (isLoading)
+            const Center(
+              child: CircularProgressIndicator(),
+            )
         ],
       ),
+    );
+  }
+
+  Column itemOfPost(int index, BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        InkWell(
+          onLongPress: () => _deletePost(items[index]),
+          child: CachedNetworkImage(
+            width: MediaQuery.of(context).size.width,
+            fit: BoxFit.cover,
+            imageUrl: items[index].postImage,
+            placeholder: (context, url) => Container(
+              color: Colors.grey,
+            ),
+            errorWidget: (context, url, error) => Icon(Icons.error),
+          ),
+        ),
+        Text(
+          items[index].caption,
+          textAlign: TextAlign.center,
+        ),
+        SizedBox(
+          height: 15,
+        ),
+      ],
     );
   }
 }
