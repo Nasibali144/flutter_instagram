@@ -22,9 +22,9 @@ class User {
     imageUrl = json["imageUrl"];
     followersCount = json["followersCount"];
     followingCount = json["followingCount"];
-    device_id = json['device_id'];
-    device_type = json['device_type'];
-    device_token = json['device_token'];
+    device_id = json['device_id']??"";
+    device_type = json['device_type']??"";
+    device_token = json['device_token']??"";
   }
 
   Map<String, dynamic> toJson() => {

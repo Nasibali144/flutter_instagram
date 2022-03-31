@@ -163,9 +163,8 @@ class DataService {
     await instance.collection(folderUsers).doc(someone.uid).collection(folderFollowers).doc(me.uid).set(me.toJson());
 
     // for notification
-    String token = (await Prefs.load(StorageKeys.TOKEN))!;
 
-    await HttpService.POST(HttpService.paramCreate(token, me.fullName, someone.fullName)).then((value) => {
+    await HttpService.POST(HttpService.paramCreate(someone.device_token, me.fullName, someone.fullName)).then((value) => {
       print("response notification: ${value.toString()}")
     });
 

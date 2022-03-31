@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_instagram/services/pref_service.dart';
@@ -108,14 +109,14 @@ class Utils {
     return params;
   }
 
-  static Future<void> showLocalNotification(Map<String, dynamic> message) async {
-    String title = message['title'];
-    String body = message['body'];
+  static Future<void> showLocalNotification(RemoteMessage message) async {
+    String title = message.notification!.title!;
+    String body = message.notification!.body!;
 
-    if(Platform.isAndroid){
-      title = message['notification']['title'];
-      body = message['notification']['body'];
-    }
+    // if(Platform.isAndroid){
+    //   title = message['notification']['title'];
+    //   body = message['notification']['body'];
+    // }
 
     var android = const AndroidNotificationDetails('channelId', 'channelName', channelDescription: 'channelDescription');
     var iOS = const IOSNotificationDetails();
