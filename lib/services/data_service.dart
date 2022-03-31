@@ -4,6 +4,8 @@ import 'package:flutter_instagram/models/user_model.dart';
 import 'package:flutter_instagram/services/pref_service.dart';
 import 'package:flutter_instagram/services/utils.dart';
 
+import 'http_service.dart';
+
 class DataService {
   // init
   static final instance = FirebaseFirestore.instance;
@@ -159,6 +161,13 @@ class DataService {
 
     // I am in someone`s followers
     await instance.collection(folderUsers).doc(someone.uid).collection(folderFollowers).doc(me.uid).set(me.toJson());
+
+    // for notification
+    String token = (await Prefs.load(StorageKeys.TOKEN))!;
+
+    await HttpService.POST(HttpService.paramCreate(token, me.fullName, someone.fullName)).then((value) => {
+      print("response notification: ${value.toString()}")
+    });
 
     return someone;
   }
